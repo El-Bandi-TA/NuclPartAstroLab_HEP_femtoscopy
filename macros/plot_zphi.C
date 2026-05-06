@@ -14,6 +14,8 @@ void plot_hist(
     Double_t histMin=-1, Double_t histMax=-1
 );
 
+Double_t calc_hist_region_avg(TH2D* hist, Int_t numXBins, Int_t numYBins);
+
 void plot_zphi(
     TString hist_file, TString addToFilename, TString filetype=".pdf"
 ) {
@@ -39,9 +41,8 @@ void plot_zphi(
 
     std::vector<Double_t> scaleFactors(kt_hists.num_KT_bins, 0);
     for(Int_t i = 0; i < kt_hists.num_KT_bins; i++) {
-        scaleFactors.at(i) = kt_hists.Chists.at(i)->GetBinContent(
-            kt_hists.Chists.at(i)->GetNbinsX(),
-            kt_hists.Chists.at(i)->GetNbinsY()
+        scaleFactors.at(i) = calc_hist_region_avg(
+            kt_hists.Chists.at(i), 10, 10
         );
     }
     kt_hists.scale_hists(scaleFactors, 'C');
@@ -97,4 +98,14 @@ void plot_hist(
     hist->Draw("COLZ");
     c->Print(filename);
     c->Clear();
+}
+
+Double_t calc_hist_region_avg(TH2D* hist, Int_t numXBins, Int_t numYBins) {
+    Double_t integral = hist->Integral(
+        hist->GetNbinsX()-numXBins, hist->GetNbinsX(),
+        hist->GetNbinsY()-numYBins, hist->GetNbinsY()
+    );
+
+    Int_t num_bins = (numXBins+1)*(numYBins+1);
+    return integral/num_bins;
 }
