@@ -17,7 +17,7 @@ struct CutRect {
     ) : dzmin(z1), dzmax(z2), dphimin(p1), dphimax(p2) {}
 
     Bool_t contains(Float_t dz, Float_t dphi) const {
-        return (dz > dzmin && dz < dzmax && dphi > dphimin && dphi < dphimax);
+        return !(dz < dzmin || dz > dzmax || dphi < dphimin || dphi > dphimax);
     }
 };
 
