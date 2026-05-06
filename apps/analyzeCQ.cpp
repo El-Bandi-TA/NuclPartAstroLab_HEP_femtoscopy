@@ -35,6 +35,7 @@ int main(int argc, char** argv) {
         projRoot+"/data/zphihists_"+get_current_time()+".root"
     );
     Int_t pionCharge = 1;
+    Bool_t applyCut = kTRUE;
     Int_t percentInterval {1};
     Bool_t printProgressbar {kFALSE};
     Int_t startFromEvent {0};
@@ -50,10 +51,12 @@ int main(int argc, char** argv) {
                       << "[-o|--output outHistFilename="
                       << "HEPQC_ROOT/data/zphihists_CURRENTTIME.root] "
                       << "[-c|--charge pionCharge=1] "
-                      << "[--percent-interval percentInterval=1]"
-                      << "[-p|--progressbar printProgressbar=kFALSE]"
-                      << "[-s|--start-from startFromEvent=0]"
-                      << "[-w|--write-after writeAfterEach=-1]"
+                      << "[--cut applyCut=1] "
+                      << "[--no-cut applyCut=0] "
+                      << "[--percent-interval percentInterval=1] "
+                      << "[-p|--progressbar printProgressbar=kFALSE] "
+                      << "[-s|--start-from startFromEvent=0] "
+                      << "[-w|--write-after writeAfterEach=-1] "
                       << std::endl;
             return -1;
         } else if ((arg == "-n" || arg == "--nevent") && i+1 < argc) {
@@ -163,8 +166,8 @@ int main(int argc, char** argv) {
             continue;
         }
  
-        KThists.fill_Ahists();
-        KThists.fill_Bhists();
+        KThists.fill_Ahists(applyCut);
+        KThists.fill_Bhists(applyCut);
     }
     
     auto t_endanal = std::chrono::high_resolution_clock::now();
@@ -175,6 +178,8 @@ int main(int argc, char** argv) {
               
     std::cerr << "\nNumber of empty pion vectors: "
               << KThists.Nemptypionvects << '\n';
+    std::cerr << "\nNumber of rejected pairs of pions: "
+              << KThists.NrejectedPairs << '\n';
     
     KThists.create_Chists();
     KThists.write_hists(outHistFile);

@@ -35,6 +35,7 @@ int main(int argc, char** argv) {
         projRoot+"/data/zphihists_"+get_current_time()+".root"
     );
     Int_t pionCharge = 1;
+    Bool_t applyCut = kFALSE;
     Int_t percentInterval {1};
     Bool_t printProgressbar {kFALSE};
     Int_t startFromEvent {0};
@@ -50,10 +51,12 @@ int main(int argc, char** argv) {
                       << "[-o|--output outHistFilename="
                       << "HEPQC_ROOT/data/zphihists_CURRENTTIME.root] "
                       << "[-c|--charge pionCharge=1] "
-                      << "[--percent-interval percentInterval=1]"
-                      << "[-p|--progressbar printProgressbar=kFALSE]"
-                      << "[-s|--start-from startFromEvent=0]"
-                      << "[-w|--write-after writeAfterEach=-1]"
+                      << "[--cut applyCut=1] "
+                      << "[--no-cut applyCut=0] "
+                      << "[--percent-interval percentInterval=1] "
+                      << "[-p|--progressbar printProgressbar=kFALSE] "
+                      << "[-s|--start-from startFromEvent=0] "
+                      << "[-w|--write-after writeAfterEach=-1] "
                       << std::endl;
             return -1;
         } else if ((arg == "-n" || arg == "--nevent") && i+1 < argc) {
@@ -65,6 +68,10 @@ int main(int argc, char** argv) {
         } else if ((arg == "-c" || arg == "--charge") && i+1 < argc) {
             pionCharge = std::atoi(argv[++i]);
             if (pionCharge == -1) pionCharge = 0;
+        } else if (arg == "--cut") {
+            applyCut=kTRUE;
+        } else if (arg == "--no-cut") {
+            applyCut=kFALSE;
         } else if (arg == "--percent-interval" && i+1 < argc) {
             percentInterval = std::atoi(argv[++i]);
         } else if (arg == "-p" || arg == "--progressbar") {
@@ -87,8 +94,11 @@ int main(int argc, char** argv) {
     }
 
     // Initializing KTParser
+    std::string chargeStr = pionCharge > 0 ? "plus" : "minus";
     KTParser<TH2D> KThists(
-        projRoot+"/config/KTbins.txt", "zphi", "(z, #phi); z [cm]; #phi",
+        projRoot+"/config/KTbins.txt",
+        projRoot+"/config/KTcuts_"+chargeStr+".txt",
+        "zphi", "(z, #phi); z [cm]; #phi",
         0, 30, 10, -15.0, 15.0, 10
     );
 
@@ -122,7 +132,6 @@ int main(int argc, char** argv) {
     
     // Running event loop
     for(int i = startFromEvent; i < startFromEvent+Nevents; i++) {
-        
         t_prev = progressbar(
             i-startFromEvent+1, Nevents, percentInterval,
             t_prev, printProgressbar
@@ -134,14 +143,14 @@ int main(int argc, char** argv) {
         }
 
         ptree.GetEntry(i);        
-
+        
         KThists.clear_current_event();
         KThists.current_event.centrality = ptree.Centrality;
         KThists.current_event.Zvertex = ptree.Zvertex;
-
+        
         // Apply event cut
         if (KThists.get_pool_index() == -1) {continue;}
-
+        
         for(int ipart = 0; ipart < ptree.Ntracks; ipart++) {
             // Search for pions with specific charge
             if(ptree.isPi[ipart]==0 && ptree.ch[ipart]==pionCharge) {
@@ -156,14 +165,14 @@ int main(int argc, char** argv) {
                 ) { KThists.add_pion(pi); }
             }
         }
-
+        
         if (KThists.current_event.pions.empty()) {
             KThists.Nemptypionvects++;
             continue;
         }
- 
-        KThists.fill_Ahists();
-        KThists.fill_Bhists();
+        
+        KThists.fill_Ahists(applyCut);
+        KThists.fill_Bhists(applyCut);
     }
     
     auto t_endanal = std::chrono::high_resolution_clock::now();
@@ -174,6 +183,8 @@ int main(int argc, char** argv) {
               
     std::cerr << "\nNumber of empty pion vectors: "
               << KThists.Nemptypionvects << '\n';
+    std::cerr << "\nNumber of rejected pairs of pions: "
+              << KThists.NrejectedPairs << '\n';
     
     KThists.create_Chists();
     KThists.write_hists(outHistFile);

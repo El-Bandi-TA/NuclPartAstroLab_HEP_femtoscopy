@@ -14,8 +14,7 @@
 #include <string>
 #include <vector>
 
-class KTParserBase
-{
+class KTParserBase {
 private:
     void parse_config_file();
 public:
@@ -51,6 +50,7 @@ private:
 public:
     Event current_event;
     Int_t Nemptypionvects;
+    Int_t NrejectedPairs=0;
     Pool pool;
     std::vector<T*> Ahists;
     std::vector<T*> Bhists;
@@ -120,8 +120,8 @@ public:
     );
     void create_Chist(Int_t kt_idx);
     void create_Chists();
-    void fill_Ahists();
-    void fill_Bhists();
+    void fill_Ahists(Bool_t cut=kTRUE);
+    void fill_Bhists(Bool_t cut=kTRUE);
     void scale_ABhists();
     void scale_hists(Double_t scaleFactor, char which);
     void scale_hists(const std::vector<Double_t>& scaleFactor, char which);

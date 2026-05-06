@@ -219,7 +219,7 @@ Float_t calc_dphi(const Pion& p1, const Pion& p2) {
 // --...---
 
 template <>
-void KTParser<TH1D>::fill_Ahists() {
+void KTParser<TH1D>::fill_Ahists(Bool_t cut) {
     if(current_event.pions.size() < 2) return;
     
     for(
@@ -238,7 +238,10 @@ void KTParser<TH1D>::fill_Ahists() {
             Float_t dphi = calc_dphi(p1, p2);
             Float_t KT = calc_KT(p1, p2);
             Int_t ktbin = get_KT_index(KT);
-            if (ZPhiCuts.isRejected(ktbin, dz, dphi)) continue;
+            if (cut && ZPhiCuts.isRejected(ktbin, dz, dphi)) {
+                NrejectedPairs++;
+                continue;
+            }
             
             Float_t Q = calc_moment_diff(p1, p2);
             Ahists.at(ktbin)->Fill(Q);
@@ -247,7 +250,7 @@ void KTParser<TH1D>::fill_Ahists() {
 }
 
 template <>
-void KTParser<TH2D>::fill_Ahists() {
+void KTParser<TH2D>::fill_Ahists(Bool_t cut) {
     if(current_event.pions.size() < 2) return;
     
     for(
@@ -266,29 +269,20 @@ void KTParser<TH2D>::fill_Ahists() {
             Float_t dphi = calc_dphi(p1, p2);
             Float_t KT = calc_KT(p1, p2);
             Int_t ktbin = get_KT_index(KT);
+            if (cut && ZPhiCuts.isRejected(ktbin, dz, dphi)) {
+                NrejectedPairs++;
+                continue;
+            }
+
             Ahists.at(ktbin)->Fill(dz, dphi);
         }
     }
 }
 
 template <>
-void KTParser<TH1D>::fill_Bhists() {
+void KTParser<TH1D>::fill_Bhists(Bool_t cut) {
     Int_t pool_idx = get_pool_index();
     if(pool.pool.at(pool_idx).size()==5) {
-        // for(
-        //     std::size_t ipi = 0;
-        //     ipi < current_events.at(ktbin).pions.size();
-        //     ipi++
-        // ) {
-        //     for(
-        //         const auto& bkg_evt:
-        //         pools.at(ktbin).pool.at(pool_idx)
-        //     ) {
-        //         for(
-        //             std::size_t jpi = 0;
-        //             jpi < bkg_evt.pions.size();
-        //             jpi++
-        //         ) {
         for(const auto& p1: current_event.pions) {
             for(const auto& bkg_evt: pool.pool.at(pool_idx)) {
                 for(const auto& p2: bkg_evt.pions) {
@@ -296,7 +290,10 @@ void KTParser<TH1D>::fill_Bhists() {
                     Float_t dphi = calc_dphi(p1, p2);
                     Float_t KT = calc_KT(p1, p2);
                     Int_t ktbin = get_KT_index(KT);
-                    if (ZPhiCuts.isRejected(ktbin, dz, dphi)) continue;
+                    if (cut && ZPhiCuts.isRejected(ktbin, dz, dphi)) {
+                        NrejectedPairs++;
+                        continue;
+                    }
                     
                     Float_t Q = calc_moment_diff(p1, p2);
                     Bhists.at(ktbin)->Fill(Q);
@@ -312,25 +309,11 @@ void KTParser<TH1D>::fill_Bhists() {
 }
 
 template <>
-void KTParser<TH2D>::fill_Bhists() {
+void KTParser<TH2D>::fill_Bhists(Bool_t cut) {
     Int_t pool_idx = get_pool_index();
     if(current_event.pions.empty()) return;
 
     if(pool.pool.at(pool_idx).size()==5) {
-        // for(
-        //     std::size_t ipi = 0;
-        //     ipi < current_events.at(ktbin).pions.size();
-        //     ipi++
-        // ) {
-        //     for(
-        //         const auto& bkg_evt:
-        //         pools.at(ktbin).pool.at(pool_idx)
-        //     ) {
-        //         for(
-        //             std::size_t jpi = 0;
-        //             jpi < bkg_evt.pions.size();
-        //             jpi++
-        //         ) {
         for(const auto& p1: current_event.pions) {
             for(const auto& bkg_evt: pool.pool.at(pool_idx)) {
                 for(const auto& p2: bkg_evt.pions) {
@@ -338,6 +321,11 @@ void KTParser<TH2D>::fill_Bhists() {
                     Float_t dphi = calc_dphi(p1, p2);
                     Float_t KT = calc_KT(p1, p2);
                     Int_t ktbin = get_KT_index(KT);
+                    if (cut && ZPhiCuts.isRejected(ktbin, dz, dphi)) {
+                        NrejectedPairs++;
+                        continue;
+                    }
+
                     Bhists.at(ktbin)->Fill(dz, dphi);
                 }
             }
