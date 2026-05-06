@@ -14,7 +14,9 @@ void plot_hist(
     Double_t histMin=-1, Double_t histMax=-1
 );
 
-void plot_zphi(TString hist_file, TString addToFilename) {
+void plot_zphi(
+    TString hist_file, TString addToFilename, TString filetype=".pdf"
+) {
     KTParser<TH2D> kt_hists(
         "../config/KTbins.txt", "../data/"+hist_file,
         "zphi", "(#Delta z, #Delta #phi); #Delta z [cm]; #Delta #phi"
@@ -57,21 +59,21 @@ void plot_zphi(TString hist_file, TString addToFilename) {
         plot_hist(
             c, kt_hists.Ahists.at(i),
             "../figures/Ahists/Azphi_"+addToFilename+"_"+
-            std::to_string(i)+".pdf"
+            std::to_string(i)+filetype
         );
         std::cerr << "B integral = " << kt_hists.Bhists.at(i)->Integral("width")
                   << '\n';
         plot_hist(
             c, kt_hists.Bhists.at(i),
             "../figures/Bhists/Bzphi_"+addToFilename+"_"
-            +std::to_string(i)+".pdf"
+            +std::to_string(i)+filetype
         );
         std::cerr << "C integral = " << kt_hists.Chists.at(i)->Integral("width")
                   << '\n';
         plot_hist(
             c, kt_hists.Chists.at(i),
             "../figures/Chists/Czphi_"+addToFilename+"_"
-            +std::to_string(i)+".pdf"
+            +std::to_string(i)+filetype
             , 0.0, 1.6
         );
     }
