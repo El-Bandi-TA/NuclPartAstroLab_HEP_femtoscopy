@@ -1,0 +1,5 @@
+# K_T bin info
+NumBins 20
+KTMin   0
+KTMax   1.0
+BinEdges
