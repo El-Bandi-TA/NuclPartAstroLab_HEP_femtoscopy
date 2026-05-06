@@ -3,3 +3,5 @@ data/
 macros/*.so
 macros/*.d
 macros/*.pcm
+scripts/logs/
+*.log
