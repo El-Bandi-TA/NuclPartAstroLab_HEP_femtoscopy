@@ -32,6 +32,7 @@ mkdir -p $OUT_DIR
 ./../build/analyzeCQ \
     -s $START_EVENT \
     -n 10000000 \
-    -w -1 \
     -c $CHARGE \
+    --cut \
+    -w -1 \
     -o ${OUT_DIR}/Q${INDEX}_${SUFFIX}.root
