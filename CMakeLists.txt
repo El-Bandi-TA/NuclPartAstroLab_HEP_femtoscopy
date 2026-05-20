@@ -8,7 +8,8 @@ project(HEP_Femtoscopy)
 add_definitions(-DHEPQC_ROOT="${CMAKE_SOURCE_DIR}")
 add_definitions(-DHEP_DATA="/project/femtoscopy/data/PHENIX_AuAu_200GeV")
 
-find_package(ROOT REQUIRED)
+find_package(ROOT REQUIRED COMPONENTS Minuit2 MathCore)
+find_package(Boost REQUIRED)
 execute_process(COMMAND root-config --cxx --version OUTPUT_VARIABLE ROOT_CXX_VERSION)
 include(${ROOT_USE_FILE})
 
@@ -26,8 +27,25 @@ set(
     src/utils.cpp
 )
 
+file(
+    GLOB COULCORR_SOURCES
+    ${CMAKE_SOURCE_DIR}/external/CoulCorrLevyIntegral/src/*.cpp
+)
+
 add_library(QuantumCorrLib SHARED ${LIB_SOURCES})
 target_link_libraries(QuantumCorrLib ${ROOT_LIBRARIES})
+
+add_library(CoulCorrLevyIntegral STATIC ${COULCORR_SOURCES})
+target_include_directories(CoulCorrLevyIntegral PUBLIC
+    "external/CoulCorrLevyIntegral/include"
+    ${Boost_INCLUDE_DIRS}
+)
+target_link_libraries(CoulCorrLevyIntegral PUBLIC
+    ${ROOT_LIBRARIES}
+    ROOT::Minuit2
+    Boost::boost
+    # ${Boost_LIBRARIES}
+)
 
 add_executable(analyzeCzphi apps/analyzeCzphi.cpp)
 target_link_libraries(analyzeCzphi QuantumCorrLib ${ROOT_LIBRARIES})
