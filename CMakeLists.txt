@@ -52,3 +52,13 @@ target_link_libraries(analyzeCzphi QuantumCorrLib ${ROOT_LIBRARIES})
 
 add_executable(analyzeCQ apps/analyzeCQ.cpp)
 target_link_libraries(analyzeCQ QuantumCorrLib ${ROOT_LIBRARIES})
+
+add_executable(fitCQ apps/fitCQ.cpp)
+target_link_libraries(fitCQ
+    PRIVATE
+    QuantumCorrLib
+    CoulCorrLevyIntegral
+    ${ROOT_LIBRARIES}
+    ROOT::Minuit2
+    ROOT::MathCore
+)
