@@ -21,7 +21,9 @@ void plot_Chist(
     Double_t QMin=0, Double_t QMax=-1
 );
 
-void plot_Q(TString hist_file, TString addToFilename, TString filetype=".pdf") {
+void plot_Q(
+    TString hist_file, TString addToFilename, TString filetype=".png"
+) {
     KTParser<TH1D> kt_hists(
         "../config/KTbins.txt", "../data/"+hist_file,
         "Q", "(Q); Q [GeV]; Counts"

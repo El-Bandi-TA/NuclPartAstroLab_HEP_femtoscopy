@@ -17,7 +17,7 @@ void plot_hist(
 Double_t calc_hist_region_avg(TH2D* hist, Int_t numXBins, Int_t numYBins);
 
 void plot_zphi(
-    TString hist_file, TString addToFilename, TString filetype=".pdf"
+    TString hist_file, TString addToFilename, TString filetype=".png"
 ) {
     KTParser<TH2D> kt_hists(
         "../config/KTbins.txt", "../data/"+hist_file,

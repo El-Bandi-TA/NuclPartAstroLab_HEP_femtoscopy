@@ -5,3 +5,4 @@ macros/*.d
 macros/*.pcm
 scripts/logs/
 *.log
+build/

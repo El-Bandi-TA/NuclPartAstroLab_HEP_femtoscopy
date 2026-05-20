@@ -4,8 +4,8 @@
 #SBATCH --output=logs/ana_%a.log
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
-#SBATCH --mem=4G                 # Adjust based on your needs
-#SBATCH --time=00:15:00          # Adjust based on your run time
+#SBATCH --mem=1G                 # Adjust based on your needs
+#SBATCH --time=00:10:00          # Adjust based on your run time
 
 # 1. Logic for Charge (-c)
 # Tasks 0-29 will be minus (-1), Tasks 30-59 will be plus (1)

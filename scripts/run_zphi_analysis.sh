@@ -24,7 +24,7 @@ fi
 START_EVENT=$((INDEX * 10000000))
 
 # 3. Path Setup
-OUT_DIR="/project/femtoscopy/students/toronyibandi/HEP/data/zphi_full"
+OUT_DIR="/project/femtoscopy/students/toronyibandi/HEP/data/zphi_cut"
 mkdir -p $OUT_DIR
 
 # 4. Execution
@@ -35,4 +35,4 @@ mkdir -p $OUT_DIR
     -c $CHARGE \
     --cut \
     -w -1 \
-    -o ${OUT_DIR}/zphi${INDEX}_${SUFFIX}.root
+    -o ${OUT_DIR}/zphi_cut${INDEX}_${SUFFIX}.root
