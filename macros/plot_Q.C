@@ -21,7 +21,7 @@ void plot_Chist(
     Double_t QMin=0, Double_t QMax=-1
 );
 
-void plot_Q(TString hist_file, TString addToFilename) {
+void plot_Q(TString hist_file, TString addToFilename, TString filetype=".pdf") {
     KTParser<TH1D> kt_hists(
         "../config/KTbins.txt", "../data/"+hist_file,
         "Q", "(Q); Q [GeV]; Counts"
@@ -29,6 +29,7 @@ void plot_Q(TString hist_file, TString addToFilename) {
 
     kt_hists.merge_hist_bins(4);
     kt_hists.scale_ABhists();
+    kt_hists.create_Chists();
 
     for(Int_t i = 0; i < kt_hists.num_KT_bins; i++) {
         TString title = Form(
@@ -53,13 +54,13 @@ void plot_Q(TString hist_file, TString addToFilename) {
         plot_ABhist(
             c, kt_hists.Ahists.at(i), kt_hists.Bhists.at(i),
             "../figures/ABhists/ABQ_"+addToFilename+"_"+
-            std::to_string(i)+".pdf",
+            std::to_string(i)+filetype,
             -1111, -1111, 0.0, 0.5
         );
         plot_Chist(
             c, kt_hists.Chists.at(i),
             "../figures/CQhists/CQ_"+addToFilename+"_"
-            +std::to_string(i)+".pdf",
+            +std::to_string(i)+filetype,
             0, 2, 0.0, 0.5
         );
     }
@@ -84,7 +85,7 @@ void plot_ABhist(
     Bhist->SetLineColor(kRed);
     Bhist->Draw("SAME");
     
-    TLegend *leg = new TLegend(0.1, 0.7, 0.2, 0.9); // (x1, y1, x2, y2) in NDC coordinates    
+    TLegend *leg = new TLegend(0.1, 0.8, 0.2, 0.9); // (x1, y1, x2, y2) in NDC coordinates
     leg->AddEntry(Ahist, "A(Q)", "l"); // "l" means use the line style
     leg->AddEntry(Bhist, "B(Q)", "l");
     leg->Draw();
