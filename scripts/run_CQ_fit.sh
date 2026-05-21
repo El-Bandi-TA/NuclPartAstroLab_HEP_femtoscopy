@@ -1,11 +1,11 @@
 #!/bin/bash
-#SBATCH --job-name=cq_fit
+#SBATCH --job-name=cq_fit_b4
 #SBATCH --array=0-39             # 0-19 for minus, 20-39 for plus
-#SBATCH --output=logs/fit_%a.log
+#SBATCH --output=logs/fit_b4_%a.log
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
-#SBATCH --mem=2G                 # Adjust based on your needs
-#SBATCH --time=00:20:00          # Adjust based on your run time
+#SBATCH --mem=8G                 # Adjust based on your needs
+#SBATCH --time=02:00:00          # Adjust based on your run time
 
 # 1. Logic for Charge (-c)
 # Tasks 0-19 will be minus (-1), Tasks 20-39 will be plus (1)
@@ -23,7 +23,7 @@ START_HIST=${INDEX}
 
 # 3. Path Setup
 IN_DIR="/project/femtoscopy/students/toronyibandi/HEP/data/Q_full"
-OUT_DIR="/project/femtoscopy/students/toronyibandi/HEP/data/fit_params"
+OUT_DIR="/project/femtoscopy/students/toronyibandi/HEP/data/fit_params_b4"
 mkdir -p $OUT_DIR
 
 # 4. Execution
@@ -32,4 +32,5 @@ mkdir -p $OUT_DIR
     -i ${IN_DIR}/Q_${SUFFIX}.root\
     -s $START_HIST \
     -n 1 \
+    -b 4 \
     -o ${OUT_DIR}/fitpars${INDEX}_${SUFFIX}.txt
