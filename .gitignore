@@ -6,3 +6,4 @@ macros/*.pcm
 scripts/logs/
 *.log
 build/
+.venv/

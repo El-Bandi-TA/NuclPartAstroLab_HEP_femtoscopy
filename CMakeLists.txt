@@ -35,7 +35,18 @@ file(
 add_library(QuantumCorrLib SHARED ${LIB_SOURCES})
 target_link_libraries(QuantumCorrLib ${ROOT_LIBRARIES})
 
-add_library(CoulCorrLevyIntegral STATIC ${COULCORR_SOURCES})
+add_library(CoulCorrLevyIntegral_static STATIC ${COULCORR_SOURCES})
+target_include_directories(CoulCorrLevyIntegral_static PUBLIC
+    "external/CoulCorrLevyIntegral/include"
+    ${Boost_INCLUDE_DIRS}
+)
+target_link_libraries(CoulCorrLevyIntegral_static PUBLIC
+    ${ROOT_LIBRARIES}
+    ROOT::Minuit2
+    Boost::boost
+    # ${Boost_LIBRARIES}
+)
+add_library(CoulCorrLevyIntegral SHARED ${COULCORR_SOURCES})
 target_include_directories(CoulCorrLevyIntegral PUBLIC
     "external/CoulCorrLevyIntegral/include"
     ${Boost_INCLUDE_DIRS}
@@ -45,6 +56,10 @@ target_link_libraries(CoulCorrLevyIntegral PUBLIC
     ROOT::Minuit2
     Boost::boost
     # ${Boost_LIBRARIES}
+)
+
+set_target_properties(CoulCorrLevyIntegral_static
+    PROPERTIES OUTPUT_NAME CoulCorrLevyIntegral
 )
 
 add_executable(analyzeCzphi apps/analyzeCzphi.cpp)
